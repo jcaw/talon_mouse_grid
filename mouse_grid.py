@@ -9,6 +9,12 @@ from talon.ui import Rect, Point2d
 user = actions.user
 
 
+# TODO: Cluster each prefix in an evenly-proportioned rectangle, where possible?
+#   What's happening by default, is that each prefix is being layed out in
+#   vertical stripes down the screen - less attractive, more distracting, harder
+#   to track visually.
+
+
 # Color of grid
 GRID_COLOR = "F003"  # F0F is a nice purple, if I want bold
 TEXT_COLOR = "FFFF"
