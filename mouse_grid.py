@@ -236,8 +236,7 @@ def redraw_grid(canvas):
         #     -text_rect.top * TEXT_BACKGROUND_PADDING,
         # )
         padding = text_height * TEXT_BACKGROUND_PADDING
-        # HACK: All kinds of dodgy offset corrections in her
-        # FIXME: Why do I need these weird offset corrections?
+        # HACK: All kinds of dodgy offset corrections in here
         text_width = paint.measure_text(
             # HACK: Single letters hard to see. Just enlarge them.
             "ll"
