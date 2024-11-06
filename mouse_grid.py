@@ -100,6 +100,36 @@ class Cell(Rect):
         self.bottom = top + height
 
 
+canvases = []
+
+
+def create_canvases():
+    for screen in ui.screens():
+        c = canvas.Canvas.from_screen(screen)
+        if app.platform == "windows":
+            # HACK: Compensate for `from_screen` being broken and giving wrong heights.
+            new_rect = Rect(*screen.rect)
+            new_rect.width -= 1
+            c.rect = new_rect
+        c.register("draw", redraw_grid)
+        c.freeze()
+        canvases.append(c)
+
+
+def destroy_canvases():
+    for c in canvases:
+        c.resume()
+        c.unregister("draw", redraw_grid)
+        c.close()
+    canvases.clear()
+
+
+def redraw_canvases():
+    for c in canvases:
+        c.resume()
+        c.freeze()
+
+
 class Interface:
     """Holds the state of the cell interface - which cells are active?"""
 
@@ -112,20 +142,10 @@ class Interface:
         self.cells = cells
         # HACK: Redraw the global canvas. Messy to structure it like this but
         #   whatever.
-        if current_canvas:
-            current_canvas.resume()
-            current_canvas.freeze()
+        redraw_canvases()
 
 
 interface = Interface()
-
-
-def free_canvas():
-    global current_canvas
-    if current_canvas:
-        current_canvas.unregister("draw", redraw_grid)
-        current_canvas.close()
-        current_canvas = None
 
 
 def redraw_grid(canvas):
@@ -466,7 +486,7 @@ class Actions:
         """Close the mouse grid and release shortcuts."""
         try:
             interface.reset([])
-            free_canvas()
+            destroy_canvases()
         finally:
             remove_tag(global_context, "user.mouse_grid_active")
 
@@ -535,9 +555,7 @@ class Actions:
         for cell in cells:
             cell.text = next(labels_iter)
 
-        left, top, width, height = entire_screen_area()
-        current_canvas = canvas.Canvas(left, top, width, height)
-        current_canvas.register("draw", redraw_grid)
+        create_canvases()
 
         # Push the cell data into the canvas.
         interface.reset(cells)
