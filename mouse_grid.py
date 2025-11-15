@@ -87,14 +87,17 @@ def entire_screen_area():
     return overall_bounds(screens)
 
 
-class Cell(Rect):
+class Cell:
     def __init__(self, left, top, width, height, text=""):
         """Single selectable cell.
 
         :param: a canvas.paint object with which to calculate label positioning.
 
         """
-        super().__init__(left, top, width, height)
+        self.x = left
+        self.y = top
+        self.width = width
+        self.height = height
         self.text = text
         self.right = left + width
         self.bottom = top + height
